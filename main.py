@@ -10,41 +10,44 @@ screen.tracer(0)
 
 #labirint maker
 grid = []
-x = -270
-y = 270
-i = False
-while (y > -270):
-    if i == True:
-        i = False
-    else:
-        i = True
-    while (x < 270):
-        cube = turtle.Turtle()
-        cube.color('white')
-        cube.shape('square')
-        cube.shapesize(1, 1, 1)
-        cube.penup()
-        cube.goto(x, y)
-        grid.append(cube)
-        if i:
-            x += 20
+def Make_grid(grid):
+    x = -270
+    y = 270
+    i = False
+    while (y > -270):
+        if i == True:
+            i = False
         else:
-            x += 40
-    y -= 20
-    if i:
-        x = -250
-    else:
-        x = -270
-
-helper = []
-for item in grid:
-    if (randint(1, 100) > 70):
-        item.reset()
-    else:
-        helper.append(item)
-grid = helper
-
+            i = True
+        while (x < 270):
+            cube = turtle.Turtle()
+            cube.color('white')
+            cube.shape('square')
+            cube.shapesize(1, 1, 1)
+            cube.penup()
+            cube.goto(x, y)
+            grid.append(cube)
+            if i:
+                x += 20
+            else:
+                x += 40
+        y -= 20
+        if i:
+            x = -250
+        else:
+            x = -270
+    
+    helper = []
+    for item in grid:
+        if (randint(1, 100) > 70):
+            item.reset()
+        else:
+            helper.append(item)
+    grid = helper
+    
 #labirint maker
+
+Make_grid(grid)
 
 gamer = turtle.Turtle()
 gamer.color('red')
