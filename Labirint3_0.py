@@ -27,10 +27,10 @@ def Board_index(grid, gamer):
 
 def Make_grid():
     global grid, field
-    x = -280
+    x = -320
     y = 280
     i = False
-    while (y > -280):
+    while (y > -300):
         if i == True:
             i = False
         else:
@@ -50,14 +50,14 @@ def Make_grid():
                 x += 40
         y -= 20
         if i:
-            x = -260
+            x = -300
         else:
-            x = -280
+            x = -320
 
     #algorithm of KRUSKAL (making labirint algorithm)
     x = -280
     y = 260
-    while (y > -260):
+    while (y > -300):
         while (x < 280):
             cube = turtle.Turtle()
             cube.color('red')
@@ -153,9 +153,9 @@ def Update_gamer():
     gamer = turtle.Turtle()
     gamer.color('blue')
     gamer.shape('turtle')
-    gamer.shapesize(0.9, 0.9, 1)
+    gamer.shapesize(1, 1, 1)
     gamer.penup()
-    gamer.goto(-300, 300)
+    gamer.goto(-280, 260)
 
 gamer = turtle.Turtle()
 
@@ -164,7 +164,7 @@ Update_gamer()
 
 
 def Move(gamer, grid, dir):
-    if dir == "Up" and gamer.position()[1] < 300:
+    if dir == "Up" and gamer.position()[1] < 280:
         gamer.setheading(90)
         gamer.forward(20)
         if Board(grid, gamer):
