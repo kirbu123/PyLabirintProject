@@ -7,8 +7,8 @@ import pygame
 file = 'Dubsleep.mp3'
 pygame.init()
 pygame.mixer.init()
-x = pygame.mixer.Sound(file)
-x.play(-1)
+Music = pygame.mixer.Sound(file)
+Music.play(-1)
 #music module
 
 screen = turtle.Screen()
