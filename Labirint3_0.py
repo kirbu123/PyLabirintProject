@@ -1,6 +1,15 @@
 import time
 import turtle
 from random import randint, choice, randrange
+import pygame
+
+#music module
+file = 'Dubsleep.mp3'
+pygame.init()
+pygame.mixer.init()
+x = pygame.mixer.Sound(file)
+x.play(-1)
+#music module
 
 screen = turtle.Screen()
 screen.title('Labirint game')
@@ -54,14 +63,13 @@ def Make_grid():
         else:
             x = -320
 
-    #algorithm of KRUSKAL (making labirint algorithm)
+    #algorithm of KRUSKAL (making labirint algorithm) start
     x = -280
     y = 260
     while (y > -300):
         while (x < 280):
             cube = turtle.Turtle()
-            cube.color('red')
-            cube.shape('square')
+            cube.hideturtle()
             cube.penup()
             cube.goto(x, y)
             field.append([cube])
@@ -128,8 +136,7 @@ def Make_grid():
         if len(mas) <= 1 or mas[0] == mas[1]:
             continue
         cube = turtle.Turtle()
-        cube.color('red')
-        cube.shape('square')
+        cube.hideturtle()
         cube.penup()
         cube.goto(obj.position()[0], obj.position()[1])
         field[mas[0]].append(cube)
@@ -140,7 +147,7 @@ def Make_grid():
         for j in i:
             j.reset()
     field = []
-
+    # algorithm of KRUSKAL (making labirint algorithm) end
 
 
 # labirint maker
@@ -217,6 +224,7 @@ def Clear():
     global grid
     for item in grid:
         item.reset()
+    grid = []
 
 def Update_win():
     global win
