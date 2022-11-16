@@ -261,9 +261,6 @@ StarCount = 20 #count of all stars
 
 def Make_star():
     global star_obj, StarCount, mas_color, StarClock, win
-    for i in range(len(star_obj)):
-        star_obj[i].reset()
-    star_obj = []
     for i in range(StarCount):
         x = turtle.Turtle()
         x.shape('square')
@@ -272,8 +269,17 @@ def Make_star():
         x.penup()
         x.goto(randrange(-290, 290, 20), randrange(-290, 290, 20))
         star_obj.append(x)
-    for i in range(len(star_obj)):
-        star_obj[i].color(choice(mas_color))
+    for i in star_obj:
+        i.color(choice(mas_color))
+    Update_win()
+    StarClock = time.time()
+
+def Update_star():
+    global star_obj, StarCount, mas_color, StarClock, win
+    for i in star_obj:
+        i.goto(randrange(-290, 290, 20), randrange(-290, 290, 20))
+    for i in star_obj:
+        i.color(choice(mas_color))
     Update_win()
     StarClock = time.time()
 
@@ -283,7 +289,7 @@ Make_star()
 
 while RunWhile:
     if time.time() - StarClock > StarBoard:
-        Make_star()
+        Update_star()
     if gamer.distance(win) < 15:
         screen.bgcolor('red')
         time.sleep(0.5)
