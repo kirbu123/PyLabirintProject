@@ -1,117 +1,199 @@
 import time
 import turtle
-from random import randint, choice
+from random import randint, choice, randrange
+import pygame
 
+# music module
+file = 'Dubsleep.mp3'
+pygame.init()
+pygame.mixer.init()
+Music = pygame.mixer.Sound(file)
+Music.play(-1)
+# music module
+
+# screen generation module
 screen = turtle.Screen()
 screen.title('Labirint game')
 screen.bgcolor('black')
 screen.setup(620, 620)
 screen.tracer(0)
+# screen generation module
+
 
 # labirint maker
-grid = []
+grid = [] # boarders array
+field = [] # free poles array (places of gaemer motion)
 
-def Board(grid, gamer):
+def Board(grid, gamer): # this is function of detecting, that gamer is in the board place
     for item in grid:
-        if gamer.distance(item) < 10:
+        if gamer.distance(item) < 10 and item.color()[0] == 'white':
             return True
     return False
 
-def Board_index(grid, gamer):
+def Board_index(grid, gamer): # this is function of detecting and returning index of the board, where gamer is located
     for i in range(len(grid)):
-        if gamer.distance(grid[i]) < 10:
+        if gamer.distance(grid[i]) < 10 and grid[i].color()[0] == 'white':
             return i
     return False
 
 
-def Make_grid():
-    global grid
-    x = -280
-    y = 280
-    i = False
-    while (y > -280):
-        if i == True:
-            i = False
-        else:
-            i = True
-        while (x < 280):
-            if (x**2 + y**2 != 0):
+def Make_grid(IsBuild = False): # function of making labirint boarders with updating main params
+    global grid, field
+    if IsBuild:
+        x = -320
+        y = 280
+        i = False
+        while (y > -300):
+            if i == True:
+                i = False
+            else:
+                i = True
+            while (x < 280):
+                if (x**2 + y**2 != 0):
+                    cube = turtle.Turtle()
+                    cube.color('white')
+                    cube.shape('square')
+                    cube.shapesize(0.7, 0.7, 1)
+                    cube.penup()
+                    cube.goto(x, y)
+                    grid.append(cube)
+                if i:
+                    x += 20
+                else:
+                    x += 40
+            y -= 20
+            if i:
+                x = -300
+            else:
+                x = -320
+
+    # algorithm of KRUSKAL (making labirint algorithm) start
+        x = -280
+        y = 260
+        while (y > -300):
+            while (x < 280):
                 cube = turtle.Turtle()
-                cube.color('white')
-                cube.shape('square')
-                cube.shapesize(1, 1, 1)
+                cube.hideturtle()
                 cube.penup()
                 cube.goto(x, y)
-                grid.append(cube)
-            if i:
-                x += 20
-            else:
+                field.append([cube])
                 x += 40
-        y -= 20
-        if i:
-            x = -260
-        else:
             x = -280
+            y -= 40
 
-    build = turtle.Turtle()
-    build.hideturtle()
-    build.color('orange')
-    build.penup()
-    build.goto(-280, 260)
-    fordelete = []
-    while (build.position()[1] > -280):
-        print(build.position()[1])
-        while (build.position()[0] < 280):
-            helper = []
-            build.goto(build.position()[0], build.position()[1] + 20)
-            if Board(grid, build):
-                helper.append(Board_index(grid, build))
-            build.goto(build.position()[0] + 20, build.position()[1] - 20)
-            if Board(grid, build):
-                helper.append(Board_index(grid, build))
-            build.goto(build.position()[0] + 20, build.position()[1])
-            if len(helper) > 1:
-                fordelete.append(choice(helper))
-        build.goto(-280, build.position()[1] - 40)
-    build.reset()
 
-    helper = []
-    for i in range(len(grid)):
-        if i in fordelete:
-            grid[i].reset()
-        else:
-            helper.append(grid[i])
-    grid = helper
+    def Find(a, b):
+        global field
+        mas = [-1, -1]
+        for i in range(len(field)):
+            if a in field[i]:
+                mas[0] = i
+            if b in field[i]:
+                mas[1] = i
+        return mas
+
+    def Merge(left, right):
+        global field
+        for i in field[right]:
+            field[left].append(i)
+        field.pop(right)
+
+    def Find_obj(obj):
+        global field
+        for i in range(len(field)):
+            for j in range(len(field[i])):
+                if obj.distance(field[i][j]) < 10:
+                    return i
+        return -1
+
+
+    def FindBlocks(obj):
+        global grid, field
+        build = turtle.Turtle()
+        build.hideturtle()
+        build.penup()
+        build.goto(obj.position()[0], obj.position()[1])
+        for i in range(2):
+            res = []
+            build.setheading(i * 90)
+            build.forward(20)
+            x = Find_obj(build)
+            if x == -1:
+                build.forward(-20)
+                continue
+            res.append(x)
+            build.forward(-40)
+            x = Find_obj(build)
+            if x == -1:
+                build.forward(20)
+                continue
+            res.append(x)
+            #build.reset()
+            return res
+        #build.reset()
+        return []
+
+
+    while (len(field) > 1):
+        index = randint(0, len(grid) - 1)
+        obj = grid[index]
+        mas = FindBlocks(obj)
+        flag = True
+        if len(mas) <= 1 or mas[0] == mas[1]:
+            continue
+        cube = turtle.Turtle()
+        cube.hideturtle()
+        cube.penup()
+        cube.goto(obj.position()[0], obj.position()[1])
+        field[mas[0]].append(cube)
+        Merge(mas[0], mas[1])
+        obj.color('black')
+    for i in field[0]:
+        flag = True
+        for item in grid:
+            if i.distance(item) < 10:
+                flag = False
+                break
+        if flag:
+            field.append([i])
+    field.pop(0)
+
+
+
+    # algorithm of KRUSKAL (making labirint algorithm) end
 
 
 # labirint maker
 
-Make_grid()
+Make_grid(True)
 
 def Update_gamer():
-    global gamer
-    gamer.reset()
-    gamer = turtle.Turtle()
-    gamer.color('red')
-    gamer.shape('square')
-    gamer.shapesize(0.9, 0.9, 1)
-    gamer.penup()
-    gamer.goto(-300, 300)
+    global players
+    cols = ['yellow', 'blue'] # array of colors of turtles
+    for i in range(len(players)):
+        players[i].color(cols[i])
+        players[i].shape('turtle')
+        players[i].shapesize(1, 1, 1)
+        players[i].penup()
+        players[i].goto(-280, 260)
 
-gamer = turtle.Turtle()
+pcount = 2 # count of players (we have just 2)
+players = [] # array of gamer-turtle objects
+for i in range(pcount):
+    players.append(turtle.Turtle())
 
 Update_gamer()
 
 
 
 def Move(gamer, grid, dir):
-    if dir == "Up" and gamer.position()[1] < 300:
+    if dir == "Up" and gamer.position()[1] < 280:
         gamer.setheading(90)
         gamer.forward(20)
         if Board(grid, gamer):
             gamer.setheading(270)
             gamer.forward(20)
-    if dir == "Down" and gamer.position()[1] > -300:
+    if dir == "Down" and gamer.position()[1] > -280:
         gamer.setheading(270)
         gamer.forward(20)
         if Board(grid, gamer):
@@ -123,7 +205,7 @@ def Move(gamer, grid, dir):
         if Board(grid, gamer):
             gamer.setheading(0)
             gamer.forward(20)
-    if dir == "Right" and gamer.position()[0] < 300:
+    if dir == "Right" and gamer.position()[0] < 280:
         gamer.setheading(0)
         gamer.forward(20)
         if Board(grid, gamer):
@@ -138,43 +220,98 @@ def Stop():
     time.sleep(0.5)
     globals()['RunWhile'] = False
 
+def PlaceBack():
+    global players
+    for i in players:
+        i.goto(-280, 260)
 
-screen.onkeypress(lambda: Move(gamer, grid, 'Up'), 'Up')
-screen.onkeypress(lambda: Move(gamer, grid, 'Down'), 'Down')
-screen.onkeypress(lambda: Move(gamer, grid, 'Left'), 'Left')
-screen.onkeypress(lambda: Move(gamer, grid, 'Right'), 'Right')
-screen.onkeypress(lambda: gamer.goto(-300, 300), 'a')
-screen.onkeypress(lambda: Stop(), 'b')
+#press buttons controll module
+screen.onkeypress(lambda: Move(players[0], grid, 'Up'), 'Up')
+screen.onkeypress(lambda: Move(players[0], grid, 'Down'), 'Down')
+screen.onkeypress(lambda: Move(players[0], grid, 'Left'), 'Left')
+screen.onkeypress(lambda: Move(players[0], grid, 'Right'), 'Right')
+
+screen.onkeypress(lambda: Move(players[1], grid, 'Up'), 'w')
+screen.onkeypress(lambda: Move(players[1], grid, 'Down'), 's')
+screen.onkeypress(lambda: Move(players[1], grid, 'Left'), 'a')
+screen.onkeypress(lambda: Move(players[1], grid, 'Right'), 'd')
+
+screen.onkeypress(lambda: players[0].goto(-300, 300), 'Z')
+screen.onkeypress(lambda: PlaceBack(), 'O')
+screen.onkeypress(lambda: players[1].goto(-300, 300), 'V')
+
+screen.onkeypress(lambda: Stop(), 'Q')
 
 screen.listen()
+#press buttons controll module
+
 
 def Clear():
     global grid
     for item in grid:
-        item.reset()
+        item.color('white')
 
 def Update_win():
     global win
-    win.reset()
-    win = turtle.Turtle()
-    win.color('orange')
-    win.shape('square')
-    win.penup()
-    win.goto(0, 0)
+    win.goto(240, -260)
 
 win = turtle.Turtle()
+win.color('red')
+win.shape('turtle')
+win.shapesize(1, 1, 1)
+win.penup()
 Update_win()
 
+#star creating-deleting module---------------------------------
+star_obj = []
+mas_color = ['red', 'white', 'orange', 'blue', 'yellow']
 
+StarClock = time.time()
+
+StarBoard = 5 #time-board of switching stars
+
+StarCount = 20 #count of all stars
+
+
+def Make_star():
+    global star_obj, StarCount, mas_color, StarClock, win
+    for i in range(StarCount):
+        x = turtle.Turtle()
+        x.shape('square')
+        x.shapesize(0.3, 0.3, 1)
+        x.setheading(45)
+        x.penup()
+        x.goto(randrange(-290, 290, 20), randrange(-290, 290, 20))
+        star_obj.append(x)
+    for i in star_obj:
+        i.color(choice(mas_color))
+    Update_win()
+    StarClock = time.time()
+
+def Update_star():
+    global star_obj, StarCount, mas_color, StarClock, win
+    for i in star_obj:
+        i.goto(randrange(-290, 290, 20), randrange(-290, 290, 20))
+    for i in star_obj:
+        i.color(choice(mas_color))
+    Update_win()
+    StarClock = time.time()
+
+Make_star()
+
+#star creating-deleting module---------------------------------
+#main updating module
 while RunWhile:
-    if gamer.distance(win) < 15:
-        screen.bgcolor('red')
-        time.sleep(0.5)
-        Clear()
-        grid = []
-        Make_grid()
-        Update_gamer()
-        screen.bgcolor('black')
-        Update_win()
+    if time.time() - StarClock > StarBoard:
+        Update_star()
+    for i in players:
+        if i.distance(win) < 15:
+            screen.bgcolor('red')
+            time.sleep(0.5)
+            Clear()
+            Make_grid()
+            Update_gamer()
+            screen.bgcolor('black')
+            Update_win()
     screen.update()
 #THE END
