@@ -225,7 +225,7 @@ def PlaceBack():
     for i in players:
         i.goto(-280, 260)
 
-#press buttons controll module
+
 screen.onkeypress(lambda: Move(players[0], grid, 'Up'), 'Up')
 screen.onkeypress(lambda: Move(players[0], grid, 'Down'), 'Down')
 screen.onkeypress(lambda: Move(players[0], grid, 'Left'), 'Left')
@@ -243,8 +243,6 @@ screen.onkeypress(lambda: players[1].goto(-300, 300), 'V')
 screen.onkeypress(lambda: Stop(), 'Q')
 
 screen.listen()
-#press buttons controll module
-
 
 def Clear():
     global grid
@@ -304,9 +302,9 @@ Make_star()
 while RunWhile:
     if time.time() - StarClock > StarBoard:
         Update_star()
-    for i in players:
-        if i.distance(win) < 15:
-            screen.bgcolor('red')
+    for i in range(len(players)):
+        if players[i].distance(win) < 15:
+            screen.bgcolor(('yellow', 'blue')[i])
             time.sleep(0.5)
             Clear()
             Make_grid()
